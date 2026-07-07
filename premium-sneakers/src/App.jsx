@@ -22,6 +22,8 @@ const App = () => {
       touchMultiplier: 2,
     });
 
+    lenis.on('scroll', ScrollTrigger.update);
+
     let animationFrameId;
 
     const raf = (time) => {
@@ -33,6 +35,7 @@ const App = () => {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      lenis.off('scroll', ScrollTrigger.update);
       lenis.destroy();
     };
   }, []);

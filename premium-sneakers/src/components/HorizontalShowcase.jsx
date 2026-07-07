@@ -18,22 +18,29 @@ const HorizontalShowcase = () => {
   const wrapperRef = useRef(null);
 
   useEffect(() => {
-    // Create the horizontal scrolling pin animation
-    const pin = gsap.to(wrapperRef.current, {
-      x: () => -(wrapperRef.current.scrollWidth - window.innerWidth),
-      ease: "none",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        pin: true,
-        scrub: 1,
-        end: () => "+=" + wrapperRef.current.scrollWidth,
-        invalidateOnRefresh: true,
-      }
-    });
+    const getScrollAmount = () => {
+      return Math.max(0, wrapperRef.current.scrollWidth - window.innerWidth);
+    };
 
-    // Cleanup function to kill the animation on component unmount
+    const ctx = gsap.context(() => {
+      gsap.to(wrapperRef.current, {
+        x: () => -getScrollAmount(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          pin: true,
+          scrub: 1,
+          end: () => `+=${getScrollAmount()}`,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        },
+      });
+    }, sectionRef);
+
+    ScrollTrigger.refresh();
+
     return () => {
-      pin.kill();
+      ctx.revert();
     };
   }, []);
 
